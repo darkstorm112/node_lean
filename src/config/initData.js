@@ -131,7 +131,7 @@ const initAdminUser = async () => {
   const adminExists = await User.findOne({ where: { username: 'admin' } });
 
   if (!adminExists) {
-    const hashedPassword = await bcrypt.hash('admin123', 10);
+    const hashedPassword = await bcrypt.hash('123456', 10);
 
     const adminUser = await User.create({
       username: 'admin',
@@ -144,7 +144,7 @@ const initAdminUser = async () => {
     const adminRole = await Role.findOne({ where: { code: 'admin' } });
     await adminUser.addRole(adminRole);
 
-    logger.info('默认管理员账号创建完成 (用户名: admin, 密码: admin123)');
+    logger.info('默认管理员账号创建完成 (用户名: admin, 密码: 123456)');
   } else {
     logger.info('管理员账号已存在');
   }
