@@ -26,3 +26,4 @@ Thumbs.db
 # 数据库
 *.sqlite
 *.db
+docs/*
