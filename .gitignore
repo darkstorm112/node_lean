@@ -1,0 +1,28 @@
+# 依赖
+node_modules/
+
+# 环境变量
+.env
+.env.local
+.env.*.local
+
+# 日志
+logs/
+*.log
+
+# 上传文件
+uploads/
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 数据库
+*.sqlite
+*.db
