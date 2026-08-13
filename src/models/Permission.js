@@ -6,9 +6,9 @@ const { sequelize } = require('../config/database');
  */
 const Permission = sequelize.define('Permission', {
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    autoIncrement: true,
     comment: '权限ID'
   },
   name: {
@@ -37,6 +37,16 @@ const Permission = sequelize.define('Permission', {
     type: DataTypes.STRING(255),
     allowNull: true,
     comment: '权限描述'
+  },
+  page: {
+    type: DataTypes.STRING(100),
+    allowNull: true,
+    comment: '所属页面（如：用户管理、角色管理）'
+  },
+  pageRoute: {
+    type: DataTypes.STRING(200),
+    allowNull: true,
+    comment: '页面路由（如：/system/user、/system/role）'
   }
 }, {
   tableName: 'permissions',
@@ -45,7 +55,8 @@ const Permission = sequelize.define('Permission', {
   updatedAt: 'updatedAt',
   indexes: [
     { fields: ['code'] },
-    { fields: ['resource'] }
+    { fields: ['resource'] },
+    { fields: ['page'] }
   ]
 });
 

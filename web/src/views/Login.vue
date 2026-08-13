@@ -59,10 +59,12 @@ import { useRouter, useRoute } from 'vue-router'
 import { ElMessage, FormInstance, FormRules } from 'element-plus'
 import { User, Lock } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
+import { useMenuStore } from '@/store/menu'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const menuStore = useMenuStore()
 
 const loginFormRef = ref<FormInstance>()
 const loading = ref(false)
@@ -91,6 +93,10 @@ const handleLogin = async () => {
       loading.value = true
       try {
         await userStore.login(loginForm.username, loginForm.password)
+
+        // 生成用户菜单
+        menuStore.generateMenus()
+
         ElMessage.success('登录成功')
 
         // 跳转到登录前的页面或首页

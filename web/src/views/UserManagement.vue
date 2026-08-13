@@ -4,25 +4,15 @@
     <el-card class="search-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="用户名">
-          <el-input
-            v-model="searchForm.username"
-            placeholder="请输入用户名"
-            clearable
-            @keyup.enter="handleSearch"
-          />
+          <el-input v-model="searchForm.username" placeholder="请输入用户名" clearable @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="邮箱">
-          <el-input
-            v-model="searchForm.email"
-            placeholder="请输入邮箱"
-            clearable
-            @keyup.enter="handleSearch"
-          />
+          <el-input v-model="searchForm.email" placeholder="请输入邮箱" clearable @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
             <el-option label="正常" value="active" />
-            <el-option label="禁用" value="inactive" />
+            <el-option label="未激活" value="inactive" />
             <el-option label="锁定" value="locked" />
           </el-select>
         </el-form-item>
@@ -40,38 +30,23 @@
       <el-button type="primary" :icon="Plus" @click="handleAdd">
         新增用户
       </el-button>
-      <el-button
-        type="danger"
-        :icon="Delete"
-        :disabled="selectedIds.length === 0"
-        @click="handleBatchDelete"
-      >
+      <el-button type="danger" :icon="Delete" :disabled="selectedIds.length === 0" @click="handleBatchDelete">
         批量删除
       </el-button>
     </el-card>
 
     <!-- 用户表格 -->
     <el-card class="table-card">
-      <el-table
-        v-loading="loading"
-        :data="userList"
-        stripe
-        @selection-change="handleSelectionChange"
-      >
+      <el-table v-loading="loading" :data="userList" stripe @selection-change="handleSelectionChange">
         <el-table-column type="selection" width="55" />
-        <el-table-column prop="id" label="ID" width="80" />
+        <!-- <el-table-column prop="id" label="ID" width="300" /> -->
         <el-table-column prop="username" label="用户名" width="150" />
-        <el-table-column prop="email" label="邮箱" width="200" />
+        <el-table-column prop="email" label="邮箱" min-width="200" />
         <el-table-column prop="realName" label="真实姓名" width="120" />
         <el-table-column prop="phone" label="手机号" width="150" />
         <el-table-column label="角色" width="150">
           <template #default="{ row }">
-            <el-tag
-              v-for="role in row.roles"
-              :key="role.id"
-              size="small"
-              style="margin-right: 5px"
-            >
+            <el-tag v-for="role in row.roles" :key="role.id" size="small" style="margin-right: 5px">
               {{ role.name }}
             </el-tag>
           </template>
@@ -79,7 +54,7 @@
         <el-table-column label="状态" width="100">
           <template #default="{ row }">
             <el-tag v-if="row.status === 'active'" type="success">正常</el-tag>
-            <el-tag v-else-if="row.status === 'inactive'" type="info">禁用</el-tag>
+            <el-tag v-else-if="row.status === 'inactive'" type="info">未激活</el-tag>
             <el-tag v-else-if="row.status === 'locked'" type="danger">锁定</el-tag>
           </template>
         </el-table-column>
@@ -104,45 +79,20 @@
       </el-table>
 
       <!-- 分页 -->
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
-        style="margin-top: 20px; justify-content: flex-end"
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" :total="pagination.total" layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange" @current-change="handlePageChange"
+        style="margin-top: 20px; justify-content: flex-end" />
     </el-card>
 
     <!-- 新增/编辑对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      @close="handleDialogClose"
-    >
-      <el-form
-        ref="userFormRef"
-        :model="userForm"
-        :rules="userFormRules"
-        label-width="100px"
-      >
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" @close="handleDialogClose">
+      <el-form ref="userFormRef" :model="userForm" :rules="userFormRules" label-width="100px">
         <el-form-item label="用户名" prop="username">
-          <el-input
-            v-model="userForm.username"
-            placeholder="请输入用户名"
-            :disabled="isEdit"
-          />
+          <el-input v-model="userForm.username" placeholder="请输入用户名" :disabled="isEdit" />
         </el-form-item>
         <el-form-item v-if="!isEdit" label="密码" prop="password">
-          <el-input
-            v-model="userForm.password"
-            type="password"
-            placeholder="请输入密码"
-            show-password
-          />
+          <el-input v-model="userForm.password" type="password" placeholder="请输入密码" show-password />
         </el-form-item>
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="userForm.email" placeholder="请输入邮箱" />
@@ -153,10 +103,15 @@
         <el-form-item label="手机号" prop="phone">
           <el-input v-model="userForm.phone" placeholder="请输入手机号" />
         </el-form-item>
+        <el-form-item label="分配角色" prop="roleIds">
+          <el-select v-model="userForm.roleIds" multiple placeholder="请选择角色" style="width: 100%">
+            <el-option v-for="role in roleList" :key="role.id" :label="role.name" :value="role.id" />
+          </el-select>
+        </el-form-item>
         <el-form-item v-if="isEdit" label="状态" prop="status">
           <el-select v-model="userForm.status" placeholder="请选择状态" style="width: 100%">
             <el-option label="正常" value="active" />
-            <el-option label="禁用" value="inactive" />
+            <el-option label="未激活" value="inactive" />
             <el-option label="锁定" value="locked" />
           </el-select>
         </el-form-item>
@@ -189,16 +144,11 @@
         </el-descriptions-item>
         <el-descriptions-item label="状态">
           <el-tag v-if="viewUser?.status === 'active'" type="success">正常</el-tag>
-          <el-tag v-else-if="viewUser?.status === 'inactive'" type="info">禁用</el-tag>
+          <el-tag v-else-if="viewUser?.status === 'inactive'" type="info">未激活</el-tag>
           <el-tag v-else-if="viewUser?.status === 'locked'" type="danger">锁定</el-tag>
         </el-descriptions-item>
         <el-descriptions-item label="角色" :span="2">
-          <el-tag
-            v-for="role in viewUser?.roles"
-            :key="role.id"
-            size="small"
-            style="margin-right: 5px"
-          >
+          <el-tag v-for="role in viewUser?.roles" :key="role.id" size="small" style="margin-right: 5px">
             {{ role.name }}
           </el-tag>
         </el-descriptions-item>
@@ -225,7 +175,9 @@ import {
   View
 } from '@element-plus/icons-vue'
 import * as userApi from '@/api/user'
+import * as roleApi from '@/api/role'
 import type { User } from '@/types/api'
+import type { Role } from '@/api/role'
 
 // 搜索表单
 const searchForm = reactive({
@@ -238,6 +190,9 @@ const searchForm = reactive({
 const userList = ref<User[]>([])
 const loading = ref(false)
 const selectedIds = ref<number[]>([])
+
+// 角色列表
+const roleList = ref<Role[]>([])
 
 // 分页
 const pagination = reactive({
@@ -265,7 +220,8 @@ const userForm = reactive({
   email: '',
   realName: '',
   phone: '',
-  status: 'active'
+  status: 'active',
+  roleIds: [] as number[]
 })
 
 // 表单验证规则
@@ -307,6 +263,18 @@ const fetchUserList = async () => {
   }
 }
 
+// 获取角色列表
+const fetchRoleList = async () => {
+  try {
+    const response = await roleApi.getAllRoles()
+    if (response.success && response.data) {
+      roleList.value = response.data
+    }
+  } catch (error) {
+    console.error('获取角色列表失败:', error)
+  }
+}
+
 // 搜索
 const handleSearch = () => {
   pagination.page = 1
@@ -341,6 +309,8 @@ const handleAdd = () => {
   dialogTitle.value = '新增用户'
   resetForm()
   dialogVisible.value = true
+  // 获取角色列表
+  fetchRoleList()
 }
 
 // 编辑
@@ -353,7 +323,11 @@ const handleEdit = (row: User) => {
   userForm.realName = row.realName || ''
   userForm.phone = row.phone || ''
   userForm.status = row.status
+  // 设置已有角色
+  userForm.roleIds = row.roles ? row.roles.map(role => role.id) : []
   dialogVisible.value = true
+  // 获取角色列表
+  fetchRoleList()
 }
 
 // 查看
@@ -415,7 +389,8 @@ const handleSubmit = async () => {
             email: userForm.email,
             realName: userForm.realName || undefined,
             phone: userForm.phone || undefined,
-            status: userForm.status
+            status: userForm.status,
+            roleIds: userForm.roleIds.length > 0 ? userForm.roleIds : undefined
           })
           ElMessage.success('更新成功')
         } else {
@@ -425,7 +400,8 @@ const handleSubmit = async () => {
             password: userForm.password,
             email: userForm.email,
             realName: userForm.realName || undefined,
-            phone: userForm.phone || undefined
+            phone: userForm.phone || undefined,
+            roleIds: userForm.roleIds.length > 0 ? userForm.roleIds : undefined
           })
           ElMessage.success('创建成功')
         }
@@ -456,6 +432,7 @@ const resetForm = () => {
   userForm.realName = ''
   userForm.phone = ''
   userForm.status = 'active'
+  userForm.roleIds = []
 }
 
 // 格式化日期

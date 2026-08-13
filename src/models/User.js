@@ -6,9 +6,9 @@ const { sequelize } = require('../config/database');
  */
 const User = sequelize.define('User', {
   id: {
-    type: DataTypes.INTEGER,
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
     primaryKey: true,
-    autoIncrement: true,
     comment: '用户ID'
   },
   username: {

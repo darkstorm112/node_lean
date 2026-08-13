@@ -35,7 +35,8 @@ class RoleService {
       }],
       limit: pageSize,
       offset: (page - 1) * pageSize,
-      order: [['createdAt', 'DESC']]
+      order: [['createdAt', 'DESC']],
+      distinct: true  // 关键：使用 distinct 确保 count 只统计角色数量，而不是关联记录数量
     });
 
     return {

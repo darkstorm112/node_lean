@@ -4,20 +4,10 @@
     <el-card class="search-card">
       <el-form :inline="true" :model="searchForm" class="search-form">
         <el-form-item label="角色名称">
-          <el-input
-            v-model="searchForm.name"
-            placeholder="请输入角色名称"
-            clearable
-            @keyup.enter="handleSearch"
-          />
+          <el-input v-model="searchForm.name" placeholder="请输入角色名称" clearable @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="角色编码">
-          <el-input
-            v-model="searchForm.code"
-            placeholder="请输入角色编码"
-            clearable
-            @keyup.enter="handleSearch"
-          />
+          <el-input v-model="searchForm.code" placeholder="请输入角色编码" clearable @keyup.enter="handleSearch" />
         </el-form-item>
         <el-form-item label="状态">
           <el-select v-model="searchForm.status" placeholder="请选择状态" clearable style="width: 150px">
@@ -44,7 +34,7 @@
     <!-- 角色表格 -->
     <el-card class="table-card">
       <el-table v-loading="loading" :data="roleList" stripe>
-        <el-table-column prop="id" label="ID" width="80" />
+        <!-- <el-table-column prop="id" label="ID" width="80" /> -->
         <el-table-column prop="name" label="角色名称" width="150" />
         <el-table-column prop="code" label="角色编码" width="150" />
         <el-table-column prop="description" label="描述" min-width="200" />
@@ -61,12 +51,7 @@
         </el-table-column>
         <el-table-column label="操作" width="350" fixed="right">
           <template #default="{ row }">
-            <el-button
-              type="success"
-              size="small"
-              :icon="Key"
-              @click="handleAssignPermissions(row)"
-            >
+            <el-button type="success" size="small" :icon="Key" @click="handleAssignPermissions(row)">
               分配权限
             </el-button>
             <el-button type="primary" size="small" :icon="View" @click="handleView(row)">
@@ -75,13 +60,8 @@
             <el-button type="warning" size="small" :icon="Edit" @click="handleEdit(row)">
               编辑
             </el-button>
-            <el-button
-              type="danger"
-              size="small"
-              :icon="Delete"
-              :disabled="row.code === 'admin'"
-              @click="handleDelete(row)"
-            >
+            <el-button type="danger" size="small" :icon="Delete" :disabled="row.code === 'admin'"
+              @click="handleDelete(row)">
               删除
             </el-button>
           </template>
@@ -89,48 +69,23 @@
       </el-table>
 
       <!-- 分页 -->
-      <el-pagination
-        v-model:current-page="pagination.page"
-        v-model:page-size="pagination.pageSize"
-        :page-sizes="[10, 20, 50, 100]"
-        :total="pagination.total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @size-change="handleSizeChange"
-        @current-change="handlePageChange"
-        style="margin-top: 20px; justify-content: flex-end"
-      />
+      <el-pagination v-model:current-page="pagination.page" v-model:page-size="pagination.pageSize"
+        :page-sizes="[10, 20, 50, 100]" :total="pagination.total" layout="total, sizes, prev, pager, next, jumper"
+        @size-change="handleSizeChange" @current-change="handlePageChange"
+        style="margin-top: 20px; justify-content: flex-end" />
     </el-card>
 
     <!-- 新增/编辑对话框 -->
-    <el-dialog
-      v-model="dialogVisible"
-      :title="dialogTitle"
-      width="600px"
-      @close="handleDialogClose"
-    >
-      <el-form
-        ref="roleFormRef"
-        :model="roleForm"
-        :rules="roleFormRules"
-        label-width="100px"
-      >
+    <el-dialog v-model="dialogVisible" :title="dialogTitle" width="600px" @close="handleDialogClose">
+      <el-form ref="roleFormRef" :model="roleForm" :rules="roleFormRules" label-width="100px">
         <el-form-item label="角色名称" prop="name">
           <el-input v-model="roleForm.name" placeholder="请输入角色名称" />
         </el-form-item>
         <el-form-item label="角色编码" prop="code">
-          <el-input
-            v-model="roleForm.code"
-            placeholder="请输入角色编码"
-            :disabled="isEdit"
-          />
+          <el-input v-model="roleForm.code" placeholder="请输入角色编码" :disabled="isEdit" />
         </el-form-item>
         <el-form-item label="描述" prop="description">
-          <el-input
-            v-model="roleForm.description"
-            type="textarea"
-            :rows="3"
-            placeholder="请输入角色描述"
-          />
+          <el-input v-model="roleForm.description" type="textarea" :rows="3" placeholder="请输入角色描述" />
         </el-form-item>
         <el-form-item v-if="isEdit" label="状态" prop="status">
           <el-select v-model="roleForm.status" placeholder="请选择状态" style="width: 100%">
@@ -176,29 +131,13 @@
     </el-dialog>
 
     <!-- 分配权限对话框 -->
-    <el-dialog
-      v-model="permissionDialogVisible"
-      title="分配权限"
-      width="600px"
-      @close="handlePermissionDialogClose"
-    >
-      <el-alert
-        title="提示"
-        type="info"
-        :closable="false"
-        style="margin-bottom: 15px"
-      >
+    <el-dialog v-model="permissionDialogVisible" title="分配权限" width="600px" @close="handlePermissionDialogClose">
+      <el-alert title="提示" type="info" :closable="false" style="margin-bottom: 15px">
         为角色 <strong>{{ currentRole?.name }}</strong> 分配权限
       </el-alert>
 
-      <el-tree
-        ref="permissionTreeRef"
-        :data="permissionTreeData"
-        :props="{ children: 'children', label: 'name' }"
-        show-checkbox
-        node-key="id"
-        :default-checked-keys="selectedPermissionIds"
-      />
+      <el-tree ref="permissionTreeRef" :data="permissionTreeData" :props="{ children: 'children', label: 'name' }"
+        show-checkbox node-key="id" :default-checked-keys="selectedPermissionIds" />
 
       <template #footer>
         <el-button @click="permissionDialogVisible = false">取消</el-button>

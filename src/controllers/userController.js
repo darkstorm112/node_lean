@@ -34,7 +34,7 @@ class UserController {
   async getUserDetail(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await userService.getUserById(parseInt(id));
+      const user = await userService.getUserById(id);
       res.json(success(user));
     } catch (err) {
       logger.error('获取用户详情失败:', err);
@@ -61,7 +61,7 @@ class UserController {
   async updateUser(req, res, next) {
     try {
       const { id } = req.params;
-      const user = await userService.updateUser(parseInt(id), req.body);
+      const user = await userService.updateUser(id, req.body);
       res.json(success(user, '用户更新成功'));
     } catch (err) {
       logger.error('更新用户失败:', err);
@@ -77,11 +77,11 @@ class UserController {
       const { id } = req.params;
 
       // 防止删除当前登录用户
-      if (parseInt(id) === req.user.id) {
+      if (id === req.user.id) {
         throw new Error('不能删除当前登录用户');
       }
 
-      await userService.deleteUser(parseInt(id));
+      await userService.deleteUser(id);
       res.json(success(null, '用户删除成功'));
     } catch (err) {
       logger.error('删除用户失败:', err);
@@ -117,7 +117,7 @@ class UserController {
       const { id } = req.params;
       const { newPassword } = req.body;
 
-      await userService.resetPassword(parseInt(id), newPassword);
+      await userService.resetPassword(id, newPassword);
       res.json(success(null, '密码重置成功'));
     } catch (err) {
       logger.error('重置密码失败:', err);

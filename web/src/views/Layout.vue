@@ -34,22 +34,36 @@
           router
           class="layout-menu"
         >
-          <el-menu-item index="/dashboard">
-            <el-icon><Odometer /></el-icon>
-            <span>仪表板</span>
-          </el-menu-item>
-          <el-menu-item index="/users">
-            <el-icon><User /></el-icon>
-            <span>用户管理</span>
-          </el-menu-item>
-          <el-menu-item index="/roles">
-            <el-icon><Setting /></el-icon>
-            <span>角色管理</span>
-          </el-menu-item>
-          <el-menu-item index="/profile">
-            <el-icon><User /></el-icon>
-            <span>个人中心</span>
-          </el-menu-item>
+          <template v-for="menu in menuList" :key="menu.path">
+            <el-menu-item
+              v-if="!menu.children || menu.children.length === 0"
+              :index="menu.path"
+            >
+              <el-icon v-if="menu.icon">
+                <component :is="menu.icon" />
+              </el-icon>
+              <span>{{ menu.title }}</span>
+            </el-menu-item>
+
+            <el-sub-menu v-else :index="menu.path">
+              <template #title>
+                <el-icon v-if="menu.icon">
+                  <component :is="menu.icon" />
+                </el-icon>
+                <span>{{ menu.title }}</span>
+              </template>
+              <el-menu-item
+                v-for="child in menu.children"
+                :key="child.path"
+                :index="child.path"
+              >
+                <el-icon v-if="child.icon">
+                  <component :is="child.icon" />
+                </el-icon>
+                <span>{{ child.title }}</span>
+              </el-menu-item>
+            </el-sub-menu>
+          </template>
         </el-menu>
       </el-aside>
 
@@ -61,24 +75,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ElMessageBox, ElMessage } from 'element-plus'
 import {
   UserFilled,
   User,
   ArrowDown,
-  SwitchButton,
-  Odometer,
-  Setting
+  SwitchButton
 } from '@element-plus/icons-vue'
 import { useUserStore } from '@/store/user'
+import { useMenuStore } from '@/store/menu'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const menuStore = useMenuStore()
 
 const activeMenu = computed(() => route.path)
+const menuList = computed(() => menuStore.menuList)
 
 const handleCommand = async (command: string) => {
   if (command === 'profile') {
@@ -92,6 +107,7 @@ const handleCommand = async (command: string) => {
       })
 
       await userStore.logout()
+      menuStore.clearMenus() // 清空菜单
       ElMessage.success('已退出登录')
       router.push('/login')
     } catch (error) {
@@ -99,6 +115,11 @@ const handleCommand = async (command: string) => {
     }
   }
 }
+
+// 初始化菜单
+onMounted(() => {
+  menuStore.generateMenus()
+})
 </script>
 
 <style scoped>

@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/userController');
 const { authenticate } = require('../middlewares/auth');
+const { hasPermission, hasRole } = require('../middlewares/permission');
 const validate = require('../middlewares/validator');
 const Joi = require('joi');
 
@@ -48,10 +49,11 @@ const createUserSchema = Joi.object({
       'string.max': '真实姓名长度不能超过50个字符'
     }),
   roleIds: Joi.array()
-    .items(Joi.number())
+    .items(Joi.string().uuid())
     .optional()
     .messages({
-      'array.base': '角色ID必须是数组'
+      'array.base': '角色ID必须是数组',
+      'string.guid': '角色ID格式不正确'
     })
 });
 
@@ -84,10 +86,11 @@ const updateUserSchema = Joi.object({
       'any.only': '状态只能是 active、inactive 或 locked'
     }),
   roleIds: Joi.array()
-    .items(Joi.number())
+    .items(Joi.string().uuid())
     .optional()
     .messages({
-      'array.base': '角色ID必须是数组'
+      'array.base': '角色ID必须是数组',
+      'string.guid': '角色ID格式不正确'
     })
 });
 
@@ -118,50 +121,50 @@ const resetPasswordSchema = Joi.object({
 /**
  * @route   GET /api/users
  * @desc    获取用户列表（分页、搜索）
- * @access  Private
+ * @access  Private - 需要 user:read 权限
  */
-router.get('/', authenticate, userController.getUserList);
+router.get('/', authenticate, hasPermission('user:read'), userController.getUserList);
 
 /**
  * @route   GET /api/users/:id
  * @desc    获取用户详情
- * @access  Private
+ * @access  Private - 需要 user:read 权限
  */
-router.get('/:id', authenticate, userController.getUserDetail);
+router.get('/:id', authenticate, hasPermission('user:read'), userController.getUserDetail);
 
 /**
  * @route   POST /api/users
  * @desc    创建用户
- * @access  Private
+ * @access  Private - 需要 user:create 权限
  */
-router.post('/', authenticate, validate(createUserSchema), userController.createUser);
+router.post('/', authenticate, hasPermission('user:create'), validate(createUserSchema), userController.createUser);
 
 /**
  * @route   PUT /api/users/:id
  * @desc    更新用户
- * @access  Private
+ * @access  Private - 需要 user:update 权限
  */
-router.put('/:id', authenticate, validate(updateUserSchema), userController.updateUser);
+router.put('/:id', authenticate, hasPermission('user:update'), validate(updateUserSchema), userController.updateUser);
 
 /**
  * @route   DELETE /api/users/:id
  * @desc    删除用户
- * @access  Private
+ * @access  Private - 仅管理员
  */
-router.delete('/:id', authenticate, userController.deleteUser);
+router.delete('/:id', authenticate, hasRole('admin'), userController.deleteUser);
 
 /**
  * @route   POST /api/users/batch-delete
  * @desc    批量删除用户
- * @access  Private
+ * @access  Private - 仅管理员
  */
-router.post('/batch-delete', authenticate, validate(batchDeleteSchema), userController.batchDeleteUsers);
+router.post('/batch-delete', authenticate, hasRole('admin'), validate(batchDeleteSchema), userController.batchDeleteUsers);
 
 /**
  * @route   POST /api/users/:id/reset-password
  * @desc    重置用户密码
- * @access  Private
+ * @access  Private - 需要 user:reset-password 权限
  */
-router.post('/:id/reset-password', authenticate, validate(resetPasswordSchema), userController.resetPassword);
+router.post('/:id/reset-password', authenticate, hasPermission('user:reset-password'), validate(resetPasswordSchema), userController.resetPassword);
 
 module.exports = router;

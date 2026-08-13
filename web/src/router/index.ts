@@ -51,6 +51,17 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
+        path: 'permissions',
+        name: 'PermissionManagement',
+        component: () => import('@/views/PermissionManagement.vue'),
+        meta: {
+          title: '权限管理',
+          requiresAuth: true,
+          permission: 'permission:read', // 需要权限查看权限
+          role: 'admin' // 仅管理员可访问
+        }
+      },
+      {
         path: 'profile',
         name: 'Profile',
         component: () => import('@/views/Profile.vue'),

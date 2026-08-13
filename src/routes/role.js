@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const roleController = require('../controllers/roleController');
 const { authenticate } = require('../middlewares/auth');
+const { hasPermission, hasRole } = require('../middlewares/permission');
 const validate = require('../middlewares/validator');
 const Joi = require('joi');
 
@@ -29,57 +30,57 @@ const assignPermissionsSchema = Joi.object({
 /**
  * @route   GET /api/roles
  * @desc    获取角色列表（分页、搜索）
- * @access  Private
+ * @access  Private - 需要 role:read 权限
  */
-router.get('/', authenticate, roleController.getRoleList);
+router.get('/', authenticate, hasPermission('role:read'), roleController.getRoleList);
 
 /**
  * @route   GET /api/roles/all
  * @desc    获取所有角色（不分页）
- * @access  Private
+ * @access  Private - 需要 role:read 权限
  */
-router.get('/all', authenticate, roleController.getAllRoles);
+router.get('/all', authenticate, hasPermission('role:read'), roleController.getAllRoles);
 
 /**
  * @route   GET /api/roles/:id
  * @desc    获取角色详情
- * @access  Private
+ * @access  Private - 需要 role:read 权限
  */
-router.get('/:id', authenticate, roleController.getRoleDetail);
+router.get('/:id', authenticate, hasPermission('role:read'), roleController.getRoleDetail);
 
 /**
  * @route   POST /api/roles
  * @desc    创建角色
- * @access  Private
+ * @access  Private - 需要 role:create 权限
  */
-router.post('/', authenticate, validate(createRoleSchema), roleController.createRole);
+router.post('/', authenticate, hasPermission('role:create'), validate(createRoleSchema), roleController.createRole);
 
 /**
  * @route   PUT /api/roles/:id
  * @desc    更新角色
- * @access  Private
+ * @access  Private - 需要 role:update 权限
  */
-router.put('/:id', authenticate, validate(updateRoleSchema), roleController.updateRole);
+router.put('/:id', authenticate, hasPermission('role:update'), validate(updateRoleSchema), roleController.updateRole);
 
 /**
  * @route   DELETE /api/roles/:id
  * @desc    删除角色
- * @access  Private
+ * @access  Private - 仅管理员
  */
-router.delete('/:id', authenticate, roleController.deleteRole);
+router.delete('/:id', authenticate, hasRole('admin'), roleController.deleteRole);
 
 /**
  * @route   GET /api/roles/:id/permissions
  * @desc    获取角色的权限列表
- * @access  Private
+ * @access  Private - 需要 role:read 权限
  */
-router.get('/:id/permissions', authenticate, roleController.getRolePermissions);
+router.get('/:id/permissions', authenticate, hasPermission('role:read'), roleController.getRolePermissions);
 
 /**
  * @route   POST /api/roles/:id/permissions
  * @desc    分配角色权限
- * @access  Private
+ * @access  Private - 需要 role:assign-permissions 权限
  */
-router.post('/:id/permissions', authenticate, validate(assignPermissionsSchema), roleController.assignPermissions);
+router.post('/:id/permissions', authenticate, hasPermission('role:assign-permissions'), validate(assignPermissionsSchema), roleController.assignPermissions);
 
 module.exports = router;

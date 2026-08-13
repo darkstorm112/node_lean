@@ -47,7 +47,7 @@ class RoleController {
   async getRoleDetail(req, res, next) {
     try {
       const { id } = req.params;
-      const role = await roleService.getRoleById(parseInt(id));
+      const role = await roleService.getRoleById(id);
       res.json(success(role));
     } catch (err) {
       logger.error('获取角色详情失败:', err);
@@ -74,7 +74,7 @@ class RoleController {
   async updateRole(req, res, next) {
     try {
       const { id } = req.params;
-      const role = await roleService.updateRole(parseInt(id), req.body);
+      const role = await roleService.updateRole(id, req.body);
       res.json(success(role, '角色更新成功'));
     } catch (err) {
       logger.error('更新角色失败:', err);
@@ -88,7 +88,7 @@ class RoleController {
   async deleteRole(req, res, next) {
     try {
       const { id } = req.params;
-      await roleService.deleteRole(parseInt(id));
+      await roleService.deleteRole(id);
       res.json(success(null, '角色删除成功'));
     } catch (err) {
       logger.error('删除角色失败:', err);
@@ -102,7 +102,7 @@ class RoleController {
   async getRolePermissions(req, res, next) {
     try {
       const { id } = req.params;
-      const permissions = await roleService.getRolePermissions(parseInt(id));
+      const permissions = await roleService.getRolePermissions(id);
       res.json(success(permissions));
     } catch (err) {
       logger.error('获取角色权限失败:', err);
@@ -117,7 +117,7 @@ class RoleController {
     try {
       const { id } = req.params;
       const { permissionIds } = req.body;
-      await roleService.assignPermissions(parseInt(id), permissionIds);
+      await roleService.assignPermissions(id, permissionIds);
       res.json(success(null, '权限分配成功'));
     } catch (err) {
       logger.error('分配权限失败:', err);
