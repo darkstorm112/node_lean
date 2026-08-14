@@ -60,7 +60,13 @@ class AuthService {
       include: [{
         model: Role,
         as: 'roles',
-        attributes: ['id', 'code', 'name']
+        attributes: ['id', 'code', 'name'],
+        include: [{
+          model: Permission,
+          as: 'permissions',
+          attributes: ['id', 'code', 'name', 'resource', 'action', 'description'],
+          through: { attributes: [] }
+        }]
       }]
     });
 
