@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User, Role } = require('../models');
+const { User, Role, Permission } = require('../models');
 const logger = require('../utils/logger');
 
 /**
@@ -160,7 +160,13 @@ class AuthService {
       include: [{
         model: Role,
         as: 'roles',
-        attributes: ['id', 'code', 'name', 'description']
+        attributes: ['id', 'code', 'name', 'description'],
+        include: [{
+          model: Permission,
+          as: 'permissions',
+          attributes: ['id', 'code', 'name', 'resource', 'action', 'description'],
+          through: { attributes: [] }
+        }]
       }],
       attributes: { exclude: ['password'] }
     });
