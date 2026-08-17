@@ -52,6 +52,28 @@ export const useMenuStore = defineStore('menu', () => {
       role: 'admin'
     },
     {
+      path: '/tickets',
+      name: 'TicketManagement',
+      title: '工单管理',
+      icon: 'Document',
+      permission: 'ticket:read'
+    },
+    {
+      path: '/files',
+      name: 'FileManagement',
+      title: '文件管理',
+      icon: 'Folder',
+      permission: 'file:read'
+    },
+    {
+      path: '/logs',
+      name: 'LogManagement',
+      title: '操作日志',
+      icon: 'Operation',
+      permission: 'log:read',
+      role: 'admin'
+    },
+    {
       path: '/profile',
       name: 'Profile',
       title: '个人中心',

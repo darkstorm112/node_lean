@@ -62,6 +62,37 @@ const routes: Array<RouteRecordRaw> = [
         }
       },
       {
+        path: 'tickets',
+        name: 'TicketManagement',
+        component: () => import('@/views/TicketManagement.vue'),
+        meta: {
+          title: '工单管理',
+          requiresAuth: true,
+          permission: 'ticket:read'
+        }
+      },
+      {
+        path: 'files',
+        name: 'FileManagement',
+        component: () => import('@/views/FileManagement.vue'),
+        meta: {
+          title: '文件管理',
+          requiresAuth: true,
+          permission: 'file:read'
+        }
+      },
+      {
+        path: 'logs',
+        name: 'LogManagement',
+        component: () => import('@/views/LogManagement.vue'),
+        meta: {
+          title: '操作日志',
+          requiresAuth: true,
+          permission: 'log:read',
+          role: 'admin'
+        }
+      },
+      {
         path: 'profile',
         name: 'Profile',
         component: () => import('@/views/Profile.vue'),

@@ -2,6 +2,9 @@ const { sequelize } = require('../config/database');
 const User = require('./User');
 const Role = require('./Role');
 const Permission = require('./Permission');
+const Ticket = require('./Ticket');
+const File = require('./File');
+const Log = require('./Log');
 
 /**
  * 定义模型关联关系
@@ -37,6 +40,29 @@ Permission.belongsToMany(Role, {
   as: 'roles'
 });
 
+// 工单和用户：多对一关系
+Ticket.belongsTo(User, {
+  foreignKey: 'creatorId',
+  as: 'creator'
+});
+
+Ticket.belongsTo(User, {
+  foreignKey: 'approverId',
+  as: 'approver'
+});
+
+// 文件和用户：多对一关系
+File.belongsTo(User, {
+  foreignKey: 'uploaderId',
+  as: 'uploader'
+});
+
+// 日志和用户：多对一关系
+Log.belongsTo(User, {
+  foreignKey: 'userId',
+  as: 'user'
+});
+
 /**
  * 同步数据库（仅在开发环境使用）
  */
@@ -55,5 +81,8 @@ module.exports = {
   User,
   Role,
   Permission,
+  Ticket,
+  File,
+  Log,
   syncDatabase
 };

@@ -39,8 +39,9 @@ app.use('/api/users', require('./routes/user'));
 app.use('/api/roles', require('./routes/role'));
 app.use('/api/permissions', require('./routes/permission'));
 app.use('/api/test', require('./routes/test'));
-// app.use('/api/tickets', require('./routes/ticket'));
-// app.use('/api/files', require('./routes/file'));
+app.use('/api/tickets', require('./routes/ticket'));
+app.use('/api/files', require('./routes/file'));
+app.use('/api/logs', require('./routes/log'));
 
 // 404 处理
 app.use(notFound);

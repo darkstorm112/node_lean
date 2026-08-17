@@ -152,11 +152,116 @@ async function initPermissions() {
       }
     ];
 
+    // 工单管理权限
+    const ticketPermissions = [
+      {
+        code: 'ticket:read',
+        name: '查看工单',
+        resource: 'ticket',
+        action: 'read',
+        description: '查看工单列表和详情',
+        page: '工单管理',
+        pageRoute: '/ticket'
+      },
+      {
+        code: 'ticket:create',
+        name: '创建工单',
+        resource: 'ticket',
+        action: 'create',
+        description: '创建新工单',
+        page: '工单管理',
+        pageRoute: '/ticket'
+      },
+      {
+        code: 'ticket:update',
+        name: '更新工单',
+        resource: 'ticket',
+        action: 'update',
+        description: '更新工单信息',
+        page: '工单管理',
+        pageRoute: '/ticket'
+      },
+      {
+        code: 'ticket:delete',
+        name: '删除工单',
+        resource: 'ticket',
+        action: 'delete',
+        description: '删除工单',
+        page: '工单管理',
+        pageRoute: '/ticket'
+      },
+      {
+        code: 'ticket:approve',
+        name: '审批工单',
+        resource: 'ticket',
+        action: 'approve',
+        description: '审批工单（通过/拒绝）',
+        page: '工单管理',
+        pageRoute: '/ticket'
+      }
+    ];
+
+    // 文件管理权限
+    const filePermissions = [
+      {
+        code: 'file:read',
+        name: '查看文件',
+        resource: 'file',
+        action: 'read',
+        description: '查看文件列表和详情',
+        page: '文件管理',
+        pageRoute: '/file'
+      },
+      {
+        code: 'file:upload',
+        name: '上传文件',
+        resource: 'file',
+        action: 'upload',
+        description: '上传文件',
+        page: '文件管理',
+        pageRoute: '/file'
+      },
+      {
+        code: 'file:download',
+        name: '下载文件',
+        resource: 'file',
+        action: 'download',
+        description: '下载文件',
+        page: '文件管理',
+        pageRoute: '/file'
+      },
+      {
+        code: 'file:delete',
+        name: '删除文件',
+        resource: 'file',
+        action: 'delete',
+        description: '删除文件',
+        page: '文件管理',
+        pageRoute: '/file'
+      }
+    ];
+
+    // 日志管理权限
+    const logPermissions = [
+      {
+        code: 'log:read',
+        name: '查看日志',
+        resource: 'log',
+        action: 'read',
+        description: '查看操作日志',
+        page: '日志管理',
+        pageRoute: '/log'
+      }
+    ];
+
     // ==================== 创建所有权限 ====================
     const allPermissions = [
       ...userPermissions,
       ...rolePermissions,
-      ...permissionPermissions
+      ...permissionPermissions,
+      ...ticketPermissions,
+      ...filePermissions,
+      ...logPermissions
     ];
 
     console.log(`准备创建 ${allPermissions.length} 个权限...`);
@@ -195,7 +300,13 @@ async function initPermissions() {
         'user:read',           // 查看用户
         'user:update',         // 更新用户
         'role:read',           // 查看角色
-        'permission:read'      // 查看权限
+        'permission:read',     // 查看权限
+        'ticket:read',         // 查看工单
+        'ticket:create',       // 创建工单
+        'ticket:approve',      // 审批工单
+        'file:read',           // 查看文件
+        'file:upload',         // 上传文件
+        'file:download'        // 下载文件
       ];
       const managerPermissions = await Permission.findAll({
         where: { code: managerPermissionCodes }
@@ -212,7 +323,14 @@ async function initPermissions() {
     const employeeRole = await Role.findOne({ where: { code: 'employee' } });
     if (employeeRole) {
       const employeePermissionCodes = [
-        'user:read'            // 只能查看用户
+        'user:read',           // 查看用户
+        'ticket:read',         // 查看工单
+        'ticket:create',       // 创建工单
+        'ticket:update',       // 更新工单
+        'ticket:delete',       // 删除工单
+        'file:read',           // 查看文件
+        'file:upload',         // 上传文件
+        'file:download'        // 下载文件
       ];
       const employeePermissions = await Permission.findAll({
         where: { code: employeePermissionCodes }
@@ -233,10 +351,11 @@ async function initPermissions() {
     console.log('┌─────────┬──────────────────────────────────────┐');
     console.log('│  角色   │              权限列表                │');
     console.log('├─────────┼──────────────────────────────────────┤');
-    console.log('│ 管理员  │ 所有权限 (13个)                      │');
+    console.log('│ 管理员  │ 所有权限 (27个)                      │');
     console.log('│ 经理    │ user:read, user:update,              │');
-    console.log('│         │ role:read, permission:read           │');
-    console.log('│ 员工    │ user:read                            │');
+    console.log('│         │ role:read, permission:read,          │');
+    console.log('│         │ ticket相关, file相关                 │');
+    console.log('│ 员工    │ user:read, ticket相关, file相关      │');
     console.log('└─────────┴──────────────────────────────────────┘');
 
   } catch (error) {
