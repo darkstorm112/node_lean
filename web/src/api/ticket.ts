@@ -98,3 +98,35 @@ export const approveTicket = (id: number) => {
 export const rejectTicket = (id: number, rejectReason: string) => {
   return request.post(`/tickets/${id}/reject`, { rejectReason })
 }
+
+/**
+ * 导出工单到 Excel
+ */
+export const exportTickets = (params?: any) => {
+  return request.get('/tickets/export/excel', {
+    params,
+    responseType: 'blob'
+  })
+}
+
+/**
+ * 导入工单从 Excel
+ */
+export const importTickets = (file: File) => {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/tickets/import/excel', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+}
+
+/**
+ * 下载工单导入模板
+ */
+export const downloadTemplate = () => {
+  return request.get('/tickets/template/download', {
+    responseType: 'blob'
+  })
+}

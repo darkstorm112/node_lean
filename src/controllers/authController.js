@@ -1,6 +1,7 @@
 const authService = require('../services/authService');
 const { success, error } = require('../utils/response');
 const logger = require('../utils/logger');
+const { logOperation } = require('../utils/logOperation');
 
 /**
  * 认证控制器
@@ -28,6 +29,12 @@ class AuthController {
       const ip = req.ip || req.connection.remoteAddress;
 
       const result = await authService.login(username, password, ip);
+
+      // 记录登录日志
+      await logOperation(result.user.id, 'login', 'auth', null, {
+        username: result.user.username,
+        ip: ip
+      }, req);
 
       res.json(success(result, '登录成功'));
     } catch (err) {
@@ -81,8 +88,12 @@ class AuthController {
    */
   async logout(req, res, next) {
     try {
+      // 记录登出日志
+      await logOperation(req.user.id, 'logout', 'auth', null, {
+        username: req.user.username
+      }, req);
+
       // JWT 是无状态的，登出由前端处理（删除存储的 token）
-      // 这里可以记录登出日志
       logger.info(`用户登出: ${req.user.username}`);
       res.json(success(null, '登出成功'));
     } catch (err) {

@@ -248,7 +248,13 @@ class TicketService {
     if (!user.roles || user.roles.length === 0) {
       return false;
     }
-    return user.roles.some(role => role.code === 'admin' || role.code === 'manager');
+    // 支持两种格式：
+    // 1. 对象数组：[{code: 'admin'}, {code: 'manager'}]
+    // 2. 字符串数组：['admin', 'manager']
+    return user.roles.some(role => {
+      const roleCode = typeof role === 'string' ? role : role.code;
+      return roleCode === 'admin' || roleCode === 'manager';
+    });
   }
 }
 

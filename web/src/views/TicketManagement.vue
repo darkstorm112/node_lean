@@ -39,9 +39,30 @@
 
     <!-- 操作栏 -->
     <el-card class="toolbar-card">
-      <el-button type="primary" :icon="Plus" @click="handleAdd">
-        新增工单
-      </el-button>
+      <div class="toolbar-buttons">
+        <el-button type="primary" :icon="Plus" @click="handleAdd">
+          新增工单
+        </el-button>
+        <el-button type="success" :icon="Download" @click="handleExport" :loading="exporting">
+          导出Excel
+        </el-button>
+        <el-upload
+          :action="uploadAction"
+          :headers="uploadHeaders"
+          :before-upload="beforeImport"
+          :on-success="handleImportSuccess"
+          :on-error="handleImportError"
+          :show-file-list="false"
+          accept=".xlsx,.xls"
+        >
+          <el-button type="warning" :icon="Upload" :loading="importing">
+            导入Excel
+          </el-button>
+        </el-upload>
+        <el-button type="info" :icon="Document" @click="handleDownloadTemplate">
+          下载模板
+        </el-button>
+      </div>
     </el-card>
 
     <!-- 工单表格 -->
@@ -207,7 +228,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { ElMessage, ElMessageBox, FormInstance, FormRules } from 'element-plus'
 import {
   Search,
@@ -217,7 +238,10 @@ import {
   Edit,
   View,
   Check,
-  Close
+  Close,
+  Download,
+  Upload,
+  Document
 } from '@element-plus/icons-vue'
 import * as ticketApi from '@/api/ticket'
 import type { Ticket } from '@/api/ticket'
@@ -236,6 +260,8 @@ const searchForm = reactive({
 // 工单列表
 const ticketList = ref<Ticket[]>([])
 const loading = ref(false)
+const exporting = ref(false)
+const importing = ref(false)
 
 // 分页
 const pagination = reactive({
@@ -300,6 +326,17 @@ const rejectFormRules: FormRules = {
     { min: 2, message: '拒绝原因长度不能少于 2 个字符', trigger: 'blur' }
   ]
 }
+
+// 上传配置
+const uploadAction = computed(() => {
+  return `${import.meta.env.VITE_API_BASE_URL}/tickets/import/excel`
+})
+
+const uploadHeaders = computed(() => {
+  return {
+    Authorization: `Bearer ${userStore.token}`
+  }
+})
 
 // 获取工单列表
 const fetchTicketList = async () => {
@@ -525,6 +562,103 @@ const formatDate = (dateString?: string) => {
   })
 }
 
+// 导出工单
+const handleExport = async () => {
+  exporting.value = true
+  try {
+    const response = await ticketApi.exportTickets({
+      title: searchForm.title || undefined,
+      type: searchForm.type || undefined,
+      priority: searchForm.priority || undefined,
+      status: searchForm.status || undefined
+    })
+
+    // 创建下载链接
+    const blob = new Blob([response])
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `工单列表_${new Date().toISOString().slice(0, 10)}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    exporting.value = false
+  }
+}
+
+// 导入前检查
+const beforeImport = (file: any) => {
+  const isExcel = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                  file.type === 'application/vnd.ms-excel'
+  if (!isExcel) {
+    ElMessage.error('只能上传 Excel 文件！')
+    return false
+  }
+  const isLt5M = file.size / 1024 / 1024 < 5
+  if (!isLt5M) {
+    ElMessage.error('文件大小不能超过 5MB！')
+    return false
+  }
+  importing.value = true
+  return true
+}
+
+// 导入成功
+const handleImportSuccess = (response: any) => {
+  importing.value = false
+  if (response.code === 200) {
+    const data = response.data
+    ElMessage.success(`导入完成！成功 ${data.success} 条，失败 ${data.failed} 条`)
+    if (data.errors && data.errors.length > 0) {
+      console.log('导入错误:', data.errors)
+    }
+    fetchTicketList()
+  } else {
+    ElMessage.error(response.message || '导入失败')
+  }
+}
+
+// 导入失败
+const handleImportError = (error: any) => {
+  importing.value = false
+  console.error('导入失败:', error)
+  ElMessage.error('导入失败')
+}
+
+// 下载模板
+const handleDownloadTemplate = async () => {
+  try {
+    const response = await ticketApi.downloadTemplate()
+
+    // 创建下载链接
+    const blob = new Blob([response])
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = '工单导入模板.xlsx'
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    ElMessage.success('模板下载成功')
+  } catch (error) {
+    console.error('下载模板失败:', error)
+    ElMessage.error('下载模板失败')
+  }
+}
+
 // 初始化
 onMounted(() => {
   fetchTicketList()
@@ -544,5 +678,32 @@ onMounted(() => {
 
 .search-form {
   margin: 0;
+}
+
+.toolbar-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.toolbar-buttons .el-button {
+  margin: 0;
+}
+
+.toolbar-buttons .el-upload {
+  display: inline-block;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  align-items: center;
+}
+
+.action-buttons .el-button {
+  margin: 0 !important;
+  min-width: 70px;
 }
 </style>

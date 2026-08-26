@@ -1,6 +1,7 @@
 const userService = require('../services/userService');
 const { success } = require('../utils/response');
 const logger = require('../utils/logger');
+const { logOperation } = require('../utils/logOperation');
 
 /**
  * 用户管理控制器
@@ -48,6 +49,13 @@ class UserController {
   async createUser(req, res, next) {
     try {
       const user = await userService.createUser(req.body);
+
+      // 记录操作日志
+      await logOperation(req.user.id, 'create', 'user', user.id, {
+        username: user.username,
+        email: user.email
+      }, req);
+
       res.status(201).json(success(user, '用户创建成功', 201));
     } catch (err) {
       logger.error('创建用户失败:', err);

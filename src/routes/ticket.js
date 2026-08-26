@@ -5,6 +5,13 @@ const { authenticate } = require('../middlewares/auth');
 const { hasPermission } = require('../middlewares/permission');
 const validate = require('../middlewares/validator');
 const Joi = require('joi');
+const multer = require('multer');
+
+// 配置 multer 用于文件上传
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 } // 5MB
+});
 
 // 创建工单验证规则
 const createTicketSchema = Joi.object({
@@ -130,5 +137,26 @@ router.post('/:id/approve', authenticate, hasPermission('ticket:approve'), ticke
  * @access  Private - 需要 ticket:approve 权限
  */
 router.post('/:id/reject', authenticate, hasPermission('ticket:approve'), validate(rejectTicketSchema), ticketController.rejectTicket);
+
+/**
+ * @route   GET /api/tickets/export/excel
+ * @desc    导出工单到 Excel
+ * @access  Private - 需要 ticket:read 权限
+ */
+router.get('/export/excel', authenticate, hasPermission('ticket:read'), ticketController.exportTickets);
+
+/**
+ * @route   POST /api/tickets/import/excel
+ * @desc    从 Excel 导入工单
+ * @access  Private - 需要 ticket:create 权限
+ */
+router.post('/import/excel', authenticate, hasPermission('ticket:create'), upload.single('file'), ticketController.importTickets);
+
+/**
+ * @route   GET /api/tickets/template/download
+ * @desc    下载工单导入模板
+ * @access  Private - 需要 ticket:read 权限
+ */
+router.get('/template/download', authenticate, hasPermission('ticket:read'), ticketController.downloadTemplate);
 
 module.exports = router;

@@ -42,6 +42,13 @@
       </el-form>
     </el-card>
 
+    <!-- 操作栏 -->
+    <el-card class="toolbar-card">
+      <el-button type="success" :icon="Download" @click="handleExport" :loading="exporting">
+        导出Excel
+      </el-button>
+    </el-card>
+
     <!-- 日志表格 -->
     <el-card class="table-card">
       <el-table v-loading="loading" :data="logList" stripe>
@@ -159,6 +166,7 @@ const dateRange = ref<[Date, Date] | null>(null)
 // 日志列表
 const logList = ref<Log[]>([])
 const loading = ref(false)
+const exporting = ref(false)
 
 // 分页
 const pagination = reactive({
@@ -229,6 +237,39 @@ const handleView = (row: Log) => {
   viewDialogVisible.value = true
 }
 
+// 导出日志
+const handleExport = async () => {
+  exporting.value = true
+  try {
+    const response = await logApi.exportLogs({
+      action: searchForm.action || undefined,
+      resource: searchForm.resource || undefined,
+      startDate: dateRange.value?.[0] || undefined,
+      endDate: dateRange.value?.[1] || undefined
+    })
+
+    // 创建下载链接
+    const blob = new Blob([response])
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `操作日志_${new Date().toISOString().slice(0, 10)}.xlsx`
+    document.body.appendChild(link)
+    link.click()
+
+    // 清理
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+
+    ElMessage.success('导出成功')
+  } catch (error) {
+    console.error('导出失败:', error)
+    ElMessage.error('导出失败')
+  } finally {
+    exporting.value = false
+  }
+}
+
 // 格式化详细信息
 const formatDetail = (detail: any) => {
   if (typeof detail === 'string') {
@@ -267,6 +308,7 @@ onMounted(() => {
 }
 
 .search-card,
+.toolbar-card,
 .table-card {
   margin-bottom: 20px;
 }

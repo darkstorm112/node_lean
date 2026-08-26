@@ -41,3 +41,13 @@ export const getLogList = (params: LogListParams) => {
 export const getLogDetail = (id: number) => {
   return request.get(`/logs/${id}`)
 }
+
+/**
+ * 导出日志到 Excel
+ */
+export const exportLogs = (params?: any) => {
+  return request.get('/logs/export/excel', {
+    params,
+    responseType: 'blob'
+  })
+}

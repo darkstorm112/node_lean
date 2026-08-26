@@ -18,4 +18,11 @@ router.get('/', authenticate, hasPermission('log:read'), logController.getLogLis
  */
 router.get('/:id', authenticate, hasPermission('log:read'), logController.getLogDetail);
 
+/**
+ * @route   GET /api/logs/export/excel
+ * @desc    导出日志到 Excel
+ * @access  Private - 需要 log:read 权限
+ */
+router.get('/export/excel', authenticate, hasPermission('log:read'), logController.exportLogs);
+
 module.exports = router;
