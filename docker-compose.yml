@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: node-lean-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: node_lean
+      MYSQL_USER: node_lean_user
+      MYSQL_PASSWORD: user_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - node-lean-network
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: node-lean-backend
+    restart: always
+    depends_on:
+      - mysql
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_NAME: node_lean
+      DB_USER: node_lean_user
+      DB_PASSWORD: user_password
+      JWT_SECRET: your-jwt-secret-change-this
+      JWT_EXPIRES_IN: 24h
+    volumes:
+      - ./uploads:/app/uploads
+      - ./logs:/app/logs
+    ports:
+      - "3000:3000"
+    networks:
+      - node-lean-network
+
+  frontend:
+    build:
+      context: ./web
+      dockerfile: Dockerfile
+    container_name: node-lean-frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+    networks:
+      - node-lean-network
+
+volumes:
+  mysql_data:
+
+networks:
+  node-lean-network:
+    driver: bridge
