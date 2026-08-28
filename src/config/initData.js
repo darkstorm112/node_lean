@@ -47,6 +47,7 @@ const initPermissions = async () => {
     { name: '查看用户', code: 'user:read', resource: 'user', action: 'read', description: '查看用户信息' },
     { name: '更新用户', code: 'user:update', resource: 'user', action: 'update', description: '更新用户信息' },
     { name: '删除用户', code: 'user:delete', resource: 'user', action: 'delete', description: '删除用户' },
+    { name: '重置密码', code: 'user:reset-password', resource: 'user', action: 'reset-password', description: '重置用户密码' },
     { name: '分配角色', code: 'user:assign-role', resource: 'user', action: 'assign-role', description: '为用户分配角色' },
 
     // 角色管理权限
@@ -54,7 +55,13 @@ const initPermissions = async () => {
     { name: '查看角色', code: 'role:read', resource: 'role', action: 'read', description: '查看角色信息' },
     { name: '更新角色', code: 'role:update', resource: 'role', action: 'update', description: '更新角色信息' },
     { name: '删除角色', code: 'role:delete', resource: 'role', action: 'delete', description: '删除角色' },
-    { name: '分配权限', code: 'role:assign-permission', resource: 'role', action: 'assign-permission', description: '为角色分配权限' },
+    { name: '分配角色权限', code: 'role:assign-permissions', resource: 'role', action: 'assign-permissions', description: '为角色分配权限' },
+
+    // 权限管理权限
+    { name: '查看权限', code: 'permission:read', resource: 'permission', action: 'read', description: '查看权限信息' },
+    { name: '创建权限', code: 'permission:create', resource: 'permission', action: 'create', description: '创建新权限' },
+    { name: '更新权限', code: 'permission:update', resource: 'permission', action: 'update', description: '更新权限信息' },
+    { name: '删除权限', code: 'permission:delete', resource: 'permission', action: 'delete', description: '删除权限' },
 
     // 工单管理权限
     { name: '创建工单', code: 'ticket:create', resource: 'ticket', action: 'create', description: '创建新工单' },
@@ -65,6 +72,7 @@ const initPermissions = async () => {
     { name: '查看所有工单', code: 'ticket:read-all', resource: 'ticket', action: 'read-all', description: '查看所有用户的工单' },
 
     // 文件管理权限
+    { name: '查看文件', code: 'file:read', resource: 'file', action: 'read', description: '查看文件信息' },
     { name: '上传文件', code: 'file:upload', resource: 'file', action: 'upload', description: '上传文件' },
     { name: '下载文件', code: 'file:download', resource: 'file', action: 'download', description: '下载文件' },
     { name: '删除文件', code: 'file:delete', resource: 'file', action: 'delete', description: '删除文件' },
