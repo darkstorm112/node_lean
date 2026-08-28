@@ -53,7 +53,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const login = async (username: string, password: string) => {
-    const response = await authApi.login({ username, password })
+    const response = await authApi.login({ username, password }) as any
     if (response.success && response.data) {
       setToken(response.data.token)
       setUserInfo(response.data.user)
@@ -76,7 +76,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const fetchUserInfo = async () => {
-    const response = await authApi.getProfile()
+    const response = await authApi.getProfile() as any
     if (response.success && response.data) {
       setUserInfo(response.data)
       return response.data
@@ -85,7 +85,7 @@ export const useUserStore = defineStore('user', () => {
   }
 
   const updateUserInfo = async (data: any) => {
-    const response = await authApi.updateProfile(data)
+    const response = await authApi.updateProfile(data) as any
     if (response.success && response.data) {
       setUserInfo(response.data)
       return response.data

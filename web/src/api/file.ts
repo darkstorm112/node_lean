@@ -1,6 +1,6 @@
 import request from '@/utils/request'
 
-export interface File {
+export interface FileRecord {
   id: number
   originalName: string
   storedName: string

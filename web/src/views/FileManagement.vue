@@ -160,7 +160,7 @@ import {
   Picture
 } from '@element-plus/icons-vue'
 import * as fileApi from '@/api/file'
-import type { File } from '@/api/file'
+import type { FileRecord } from '@/api/file'
 import { useUserStore } from '@/store/user'
 
 const userStore = useUserStore()
@@ -174,7 +174,7 @@ const searchForm = reactive({
 })
 
 // 文件列表
-const fileList = ref<File[]>([])
+const fileList = ref<FileRecord[]>([])
 const loading = ref(false)
 const uploading = ref(false)
 

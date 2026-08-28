@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { RouteRecordRaw } from 'vue-router'
 import { useUserStore } from './user'
 
 // 菜单项接口
