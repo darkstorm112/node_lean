@@ -1,4 +1,4 @@
-{
+module.exports = {
   "apps": [{
     "name": "node-lean",
     "script": "./server.js",
